@@ -168,6 +168,69 @@ def delete_planet(user_id, planet_id):
 
     return jsonify(f'Se ha eliminado correctamente el {planet} al {user}'), 200
 
+#endpoint delete a character favorite to a user id
+@app.route('/favorite/character/<int:character_id>/user/<int:user_id>', methods=['DELETE'])  
+def delete_character(user_id, character_id):
+    user = Users_StarWars.query.get(user_id)
+    if user is None:
+        return jsonify({'msg': f'Usuario {user_id} no encontrado'}), 404
+    character= Characters_StarWars.query.get(character_id)
+    if character is None:
+        return jsonify({'msg': f'Personaje {character_id} no encontrado'}), 404
+    
+    find_relation = User_Favorites_Characters.query.filter_by(
+        user_favorites_character = user,
+        characters_favorites = character). first()
+     
+    if find_relation is None:
+        return jsonify ({'msg': 'La relación no existe'}), 404
+    
+    db.session.delete(find_relation)
+    db.session.commit()
+
+    return jsonify(f'Se ha eliminado correctamente el {character} al {user}'), 200
+
+#adicionals endpoints
+#endpoint post add a new user in users
+@app.route('/adduser', methods=['POST'])  
+def add_new_user():
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify({'msg': 'Necesitas llenar el body'}),400
+    if 'name' not in body:
+        return jsonify({'msg': 'Necesitas llenar el campo name'}),400
+    if 'email' not in body:
+        return jsonify({'msg': 'Necesitas llenar el campo email'}),400
+    if 'password' not in body:
+        return jsonify({'msg': 'Necesitas llenar el campo paswword'}),400
+    new_user = Users_StarWars()
+    new_user.name = body['name']
+    new_user.email = body['email']
+    new_user.password = body['password']
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'msg': f'Se ha agregado a {new_user.name} a la base de datos'}), 200
+
+#endpont put edit user information
+@app.route('/edituser/<int:user_id>', methods=['PUT'])  
+def edit_information_user(user_id):
+    user = Users_StarWars.query.get(user_id)
+    if user is None:
+        return jsonify({'msg': f'Usuario {user_id} no encontrado'}), 404
+
+    body = request.get_json(silent=True)
+    if 'name' in body:
+        user.name = body['name']
+    if 'email' in body:
+        user.email = body['email']
+    if 'password' in body:
+        user.password = body['password']
+    db.session.commit()
+
+    return jsonify({'msg': f'Información de {user.name} actualizada'})
+
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
