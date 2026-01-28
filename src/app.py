@@ -109,7 +109,7 @@ def get_user_favorites(user_id):
                     'Staships favoritas': favorites_starships_serialized
                     }),200
     
-#endpont post add a new planet favorite to a user id
+#endpoint post add a new planet favorite to a user id
 @app.route('/favorite/planet/<int:planet_id>/user/<int:user_id>', methods=['POST'])  
 def add_new_favorite_planet(user_id, planet_id):
     user = Users_StarWars.query.get(user_id)
@@ -127,13 +127,46 @@ def add_new_favorite_planet(user_id, planet_id):
     
     return jsonify(f'Se ha agregado correctamente el {planet} al {user}'), 200
 
-
+#endpoint post add a new character favorite to a user id
     
-
-
-
+@app.route('/favorite/character/<int:character_id>/user/<int:user_id>', methods=['POST'])  
+def add_new_favorite_character(user_id, character_id):
+    user = Users_StarWars.query.get(user_id)
+    if user is None:
+        return jsonify({'msg': f'Usuario {user_id} no encontrado'}), 404
+    character= Characters_StarWars.query.get(character_id)
+    if character is None:
+        return jsonify({'msg': f'Personaje {character_id} no encontrado'}), 404
     
+    new_favorite_character = User_Favorites_Characters()
+    new_favorite_character.user_favorites_character = user
+    new_favorite_character.characters_favorites = character
+    db.session.add(new_favorite_character)
+    db.session.commit()
+    
+    return jsonify(f'Se ha agregado correctamente el {character} al {user}'), 200
 
+#endpoint delete a planet favorite to a user id
+@app.route('/favorite/planet/<int:planet_id>/user/<int:user_id>', methods=['DELETE'])  
+def delete_planet(user_id, planet_id):
+    user = Users_StarWars.query.get(user_id)
+    if user is None:
+        return jsonify({'msg': f'Usuario {user_id} no encontrado'}), 404
+    planet= Planets_StarWars.query.get(planet_id)
+    if planet is None:
+        return jsonify({'msg': f'Planeta {planet_id} no encontrado'}), 404
+    
+    find_relation = User_Favorites_Planets.query.filter_by(
+        user_favorites_planets = user,
+        planets_favorites = planet). first()
+     
+    if find_relation is None:
+        return jsonify ({'msg': 'La relación no existe'}), 404
+    
+    db.session.delete(find_relation)
+    db.session.commit()
+
+    return jsonify(f'Se ha eliminado correctamente el {planet} al {user}'), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
