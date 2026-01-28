@@ -109,7 +109,31 @@ def get_user_favorites(user_id):
                     'Staships favoritas': favorites_starships_serialized
                     }),200
     
-        
+#endpont post add a new planet favorite to a user id
+@app.route('/favorite/planet/<int:planet_id>/user/<int:user_id>', methods=['POST'])  
+def add_new_favorite_planet(user_id, planet_id):
+    user = Users_StarWars.query.get(user_id)
+    if user is None:
+        return jsonify({'msg': f'Usuario {user_id} no encontrado'}), 404
+    planet= Planets_StarWars.query.get(planet_id)
+    if planet is None:
+        return jsonify({'msg': f'Planeta {planet_id} no encontrado'}), 404
+    
+    new_favorite = User_Favorites_Planets()
+    new_favorite.user_favorites_planets = user
+    new_favorite.planets_favorites = planet
+    db.session.add(new_favorite)
+    db.session.commit()
+    
+    return jsonify(f'Se ha agregado correctamente el {planet} al {user}'), 200
+
+
+    
+
+
+
+    
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
