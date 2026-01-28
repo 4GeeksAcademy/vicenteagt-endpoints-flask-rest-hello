@@ -68,7 +68,6 @@ class Characters_StarWars(db.Model):
             "specie": self.specie,
             "gender": self.gender,
             "height": self.height,
-            "planet_habit": self.planet_habit
             }
     
 class Planets_StarWars(db.Model):
@@ -91,8 +90,7 @@ class Planets_StarWars(db.Model):
             "id": self.id,
             "name": self.name,
             "appearances": self.appearances,
-            "species_types": self.species_types,
-            "planet_character": self.character_for_planet
+            "species_types": self.species_types
             }
 
 class Starships_StarWars(db.Model):
