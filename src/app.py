@@ -57,9 +57,9 @@ def get_all_characters():
     return jsonify({'data': characters_serialized}), 200
 
 #endpoint get character fo id
-@app.route('/characters/<int:id>', methods=['GET'])
-def get_character(id):
-    character = Characters_StarWars.query.get(id)
+@app.route('/characters/<int:character_id>', methods=['GET'])
+def get_character(character_id):
+    character = Characters_StarWars.query.get(character_id)
     character_serialized = character.serialize()
     return jsonify({'data': character_serialized}),200
 
@@ -73,9 +73,9 @@ def get_all_planets():
     return jsonify({'data': planets_serialized}), 200
 
 #endpoint get planet fo id
-@app.route('/planets/<int:id>', methods=['GET'])
-def get_planet(id):
-    planet = Planets_StarWars.query.get(id)
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def get_planet(planet_id):
+    planet = Planets_StarWars.query.get(planet_id)
     planet_serialized = planet.serialize()
     return jsonify({'data': planet_serialized}),200
 
